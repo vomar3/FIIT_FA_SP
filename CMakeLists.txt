@@ -5,9 +5,11 @@ project(mp_os LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-message([[VCPKG toolchain setup example. It is needed for some libraries. Highly recommended to pass it by command line arguments for cmake configuration (IDE can help with this).
-        set(VCPKG_TARGET_TRIPLET x64-windows)
-        set(CMAKE_TOOLCHAIN_FILE C:/Programming/vcpkg/scripts/buildsystems/vcpkg.cmake)]])
+set(DCROW_GENERATE_CMAKE ON)
+
+set(VCPKG_TARGET_TRIPLET x64-linux)
+set(CMAKE_TOOLCHAIN_FILE /home/max/vcpkg/scripts/buildsystems/vcpkg.cmake)
+set(DVCPKG_TARGET_TRIPLET x64-linux)
 
 include(FetchContent)
 FetchContent_Declare(
@@ -24,8 +26,11 @@ FetchContent_MakeAvailable(nlohmann_json)
 
 find_package(Boost COMPONENTS system container REQUIRED) # Ставить через vcpkg
 
+find_package(Crow REQUIRED)
+
 add_subdirectory(allocator)
 add_subdirectory(arithmetic)
 add_subdirectory(associative_container)
 add_subdirectory(common)
 add_subdirectory(logger)
+add_compile_options(-std=c++23)

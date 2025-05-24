@@ -19,8 +19,15 @@ public:
 
     /** Perfect forwarding ctor
      */
-    template<std::convertible_to<big_int> f, std::convertible_to<big_int> s>
-    fraction(f &&numerator, s &&denominator);
+    template<std::convertible_to<big_int> f, std::convertible_to<big_int> s> fraction(f &&numerator, s &&denominator)
+    : _numerator(std::forward<f>(numerator)), _denominator(std::forward<s>(denominator))
+    {
+        if (_denominator == 0) {
+            throw std::invalid_argument("Denominator cannot be zero");
+        }
+
+        optimise();
+    }
 
     fraction(pp_allocator<big_int::value_type> = pp_allocator<big_int::value_type>());
 
@@ -33,6 +40,8 @@ public:
     fraction &operator-=(fraction const &other) &;
 
     fraction operator-(fraction const &other) const;
+
+    fraction operator-() const;
 
     fraction &operator*=(fraction const &other) &;
 
@@ -99,5 +108,9 @@ public:
     fraction lg(fraction const &epsilon = fraction(1_bi, 1000000_bi)) const;
 
 };
+
+big_int gcd(big_int a, big_int b);
+
+static const fraction pi_2 = fraction(big_int("15707963267948965579990"), big_int("10000000000000000000000"));
 
 #endif //MP_OS_FRACTION_H

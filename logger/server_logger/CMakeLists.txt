@@ -1,3 +1,5 @@
+add_subdirectory(tests)
+
 add_library(
         mp_os_lggr_srvr_lggr
         src/server_logger.cpp
@@ -12,10 +14,12 @@ target_link_libraries(
         mp_os_lggr_srvr_lggr
         PUBLIC
         mp_os_cmmn)
+
 target_link_libraries(
         mp_os_lggr_srvr_lggr
         PUBLIC
         mp_os_lggr_lggr)
+
 target_link_libraries(
         mp_os_lggr_srvr_lggr
         PUBLIC

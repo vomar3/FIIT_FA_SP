@@ -54,6 +54,17 @@ class big_int
 
 public:
 
+    struct Split32 {
+        uint16_t hi;
+        uint16_t lo;
+    };
+
+    static Split32 split(uint32_t x) {
+        return { // явное преобразование
+            static_cast<uint16_t>(x >> 16),
+            static_cast<uint16_t>(x & 0xFFFF) };
+    }
+
     enum class multiplication_rule
     {
         trivial,
@@ -67,6 +78,10 @@ public:
         Newton,
         BurnikelZiegler
     };
+
+    static big_int gcd(const big_int& a, const big_int& b);
+
+    big_int abs(const big_int& num);
 
 private:
 
@@ -88,6 +103,7 @@ public:
 
     explicit big_int(const std::string& num, unsigned int radix = 10, pp_allocator<unsigned int> = pp_allocator<unsigned int>());
 
+    // Запрещает не целочисленные типы
     template<std::integral Num>
     big_int(Num d, pp_allocator<unsigned int> = pp_allocator<unsigned int>());
 
@@ -164,18 +180,49 @@ public:
     friend std::istream &operator>>(std::istream &stream, big_int &value);
 
     std::string to_string() const;
+
+    friend big_int multiply_karatsuba(const big_int &a, const big_int &b);
 };
 
 template<class alloc>
-big_int::big_int(const std::vector<unsigned int, alloc> &digits, bool sign, pp_allocator<unsigned int> allocator)
+big_int::big_int(const std::vector<unsigned int, alloc> &digits, bool sign, pp_allocator<unsigned int> allocator) : _sign(sign), _digits(digits.begin(), digits.end(), allocator)
 {
-    throw not_implemented("template<class alloc> big_int::big_int(const std::vector<unsigned int, alloc> &digits, bool sign, pp_allocator<unsigned int> allocator)", "your code should be here...");
+    if (_digits.empty()) {
+        _digits.push_back(0);
+    }
+
+    while (_digits.size() > 1 && _digits.back() == 0) {
+        _digits.pop_back();
+    }
 }
 
 template<std::integral Num>
-big_int::big_int(Num d, pp_allocator<unsigned int>)
+big_int::big_int(Num d, pp_allocator<unsigned int> allocator) : _sign(d >= 0), _digits(allocator)
 {
-    throw not_implemented("template<std::integral Num>big_int::big_int(Num, pp_allocator<unsigned int>)", "your code should be here...");
+    auto abs_d = static_cast<unsigned long long> (d);
+
+    if (d < 0) {
+        abs_d = static_cast<unsigned long long> (-d);
+    }
+
+    _digits.clear();
+
+    if (abs_d == 0) {
+        _digits.push_back(0);
+    } else {
+        // Разбиение числа на цифры
+        unsigned long long BASE = 1ULL << (8 * sizeof(unsigned int));
+
+        while (abs_d > 0) {
+            _digits.push_back(static_cast<unsigned int>(abs_d % BASE));
+            abs_d /= BASE;
+        }
+    }
+
+    while (_digits.size() > 1 && _digits.back() == 0) {
+        _digits.pop_back();
+    }
+
 }
 
 big_int operator""_bi(unsigned long long n);

@@ -28,7 +28,7 @@ TEST(allocatorGlobalHeapTests, test2)
 
     std::unique_ptr<smart_mem_resource> allocator_instance(new allocator_global_heap(logger_instance.get()));
     
-    auto first_block = reinterpret_cast<char *>(allocator_instance->allocate(sizeof(char) * 11));
+    auto first_block = reinterpret_cast<char *>(allocator_instance->allocate(sizeof(char) * 9999999999999999999));
     
     strcpy(first_block, "0123456789");
     

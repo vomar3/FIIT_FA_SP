@@ -36,17 +36,21 @@ template <typename T>
 struct pp_allocator
 {
 private:
+    // абстрактный базовый класс из заголовка <memory_resource>
     std::pmr::memory_resource* _mem;
 
 public:
 
+    // Аллокаторы контейнеров тоже нужно поменять местами
     using propagate_on_container_swap = std::true_type;
     using propagate_on_container_move_assignment = std::true_type;
+    // Запоминаем тип данных
     using value_type = T;
 
     pp_allocator(const pp_allocator& other) noexcept =default;
     pp_allocator(std::pmr::memory_resource* mem = std::pmr::get_default_resource()) noexcept;
 
+    // Можно поменять тип данных у аллокатора
     template<class U>
     pp_allocator(const pp_allocator<U>& other) noexcept;
 
@@ -57,12 +61,14 @@ public:
     [[nodiscard]] T* allocate(size_t n);
     void deallocate(T* p, size_t n = 1);
 
+    // Строим объект по адресу p с аргументами args
     template<class U, class... Args>
     void construct(U* p, Args&&... args);
 
     template<class U>
     void destroy(U* p);
 
+    // alignof делает выравнивание, чтобы все типы поместились, и все работало чики-пуки
     [[nodiscard]] void* allocate_bytes(size_t nbytes, size_t alignment = alignof(std::max_align_t));
 
     void deallocate_bytes(void* p, size_t bytes = 1, size_t alignment = alignof(std::max_align_t));

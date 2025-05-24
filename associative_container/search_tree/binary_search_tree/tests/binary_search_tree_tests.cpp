@@ -4,6 +4,8 @@
 #include <client_logger_builder.h>
 #include <allocator_sorted_list.h>
 #include <iostream>
+#include <ranges>
+#include <algorithm>
 
 logger *create_logger(
     std::vector<std::pair<std::string, logger::severity>> const &output_file_streams_setup,
@@ -148,9 +150,7 @@ TEST(binarySearchTreePositiveTests, noIteratorTest)
                                            }));
     logger->trace("binarySearchTreePositiveTests.test1 started");
 
-    auto al = std::make_unique<allocator_sorted_list>(10000);
-
-    auto bst = std::make_unique<binary_search_tree<int, std::string>>(std::less<int>(), al.get(), logger.get());
+    auto bst = std::make_unique<binary_search_tree<int, std::string>>(std::less<int>(), pp_allocator<int>(), logger.get());
 //    auto bst = new binary_search_tree<int, std::string>(key_comparer(), al.get(), logger.get());
 
     bst->emplace(5, "a");
