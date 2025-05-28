@@ -48,22 +48,10 @@ namespace __detail
 
 class big_int
 {
-    // Call optimise after every operation!!!
     bool _sign; // 1 +  0 -
     std::vector<unsigned int, pp_allocator<unsigned int>> _digits;
 
 public:
-
-    struct Split32 {
-        uint16_t hi;
-        uint16_t lo;
-    };
-
-    static Split32 split(uint32_t x) {
-        return { // явное преобразование
-            static_cast<uint16_t>(x >> 16),
-            static_cast<uint16_t>(x & 0xFFFF) };
-    }
 
     enum class multiplication_rule
     {
@@ -78,6 +66,17 @@ public:
         Newton,
         BurnikelZiegler
     };
+
+    struct Split32 {
+        uint16_t hi;
+        uint16_t lo;
+    };
+
+    static Split32 split(uint32_t x) {
+        return { // явное преобразование
+            static_cast<uint16_t>(x >> 16),
+            static_cast<uint16_t>(x & 0xFFFF) };
+    }
 
     static big_int gcd(const big_int& a, const big_int& b);
 
@@ -226,5 +225,7 @@ big_int::big_int(Num d, pp_allocator<unsigned int> allocator) : _sign(d >= 0), _
 }
 
 big_int operator""_bi(unsigned long long n);
+
+constexpr std::size_t karatsuba = 32;
 
 #endif //MP_OS_BIG_INT_H

@@ -717,7 +717,7 @@ big_int operator""_bi(unsigned long long n)
 }
 
 big_int multiply_karatsuba(const big_int &a, const big_int &b) {
-    if (a._digits.size() < 32 || b._digits.size() < 32) {
+    if (a._digits.size() < karatsuba || b._digits.size() < karatsuba) {
         big_int result = a;
         result.multiply_assign(b, big_int::multiplication_rule::trivial);
         return result;
