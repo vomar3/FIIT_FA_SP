@@ -700,7 +700,7 @@ big_int &big_int::modulo_assign(const big_int &other, big_int::division_rule rul
 }
 
 big_int::multiplication_rule big_int::decide_mult(size_t rhs) const noexcept {
-    if (rhs > 64) {
+    if (rhs > karatsuba) {
         return multiplication_rule::Karatsuba;
     }
 
